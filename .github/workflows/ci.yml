@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test the app with Docker Compose
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Start the app
+        run: docker compose up -d --build --wait
+
+      - name: Check both pages load
+        run: |
+          curl -fsS --retry 5 --retry-connrefused http://localhost:8080 > /dev/null
+          curl -fsS --retry 5 --retry-connrefused http://localhost:8081 > /dev/null
+
+      - name: Cast a vote and check it reaches the database
+        run: |
+          curl -fsS -X POST --data "vote=a" http://localhost:8080 > /dev/null
+          sleep 10
+          COUNT=$(docker compose exec -T db psql -U postgres -tAc "SELECT COUNT(*) FROM votes;")
+          echo "Votes in the database: $COUNT"
+          test "$COUNT" = "1"
+
+      - name: Show the logs if something failed
+        if: failure()
+        run: docker compose logs
