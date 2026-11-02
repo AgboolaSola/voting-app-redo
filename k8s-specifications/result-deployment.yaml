@@ -15,8 +15,8 @@ spec:
         app: result
     spec:
       containers:
-      - image: dockersamples/examplevotingapp_result
+      - image: ghcr.io/agboolasola/voting-app-redo-result:c700307fcfd3c7e6c33820637105897af06bf7c5
         name: result
         ports:
-        - containerPort: 80
+        - containerPort: 8080
           name: result

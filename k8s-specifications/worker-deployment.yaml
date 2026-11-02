@@ -15,5 +15,5 @@ spec:
         app: worker
     spec:
       containers:
-      - image: dockersamples/examplevotingapp_worker
+      - image: ghcr.io/agboolasola/voting-app-redo-worker:c700307fcfd3c7e6c33820637105897af06bf7c5
         name: worker
